@@ -34,7 +34,7 @@ logging.basicConfig(stream=log_stream, level=logging.WARNING)
 #####################################################
 
 #access_token = os.environ["BOT_TOKEN"]
-access_token = "NzkwNjUwNjk4NjA5NDU5MjQx.X-Ds2A.AzzO_Dk1UdFfGsgQTDwtOoj3WgI"
+access_token = "NzkwNjUwNjk4NjA5NDU5MjQx.X-Ds2A.EozPxv0QZmceTzRZuxJ-YY2WrCg"
 
 def init():
 	global command
