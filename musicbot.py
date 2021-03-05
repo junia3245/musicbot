@@ -34,7 +34,6 @@ logging.basicConfig(stream=log_stream, level=logging.WARNING)
 #####################################################
 
 access_token = os.environ["BOT_TOKEN"]
-#access_token = "NzkwNjUwNjk4NjA5NDU5MjQx.X-Ds2A.EozPxv0QZmceTzRZuxJ-YY2WrCg"
 
 def init():
 	global command
@@ -275,6 +274,9 @@ class SongQueue(asyncio.Queue):
 
 	def shuffle(self):
 		random.shuffle(self._queue)
+
+	def reserve(self, item):
+		self._queue.insert(0, item)
 
 	def select(self, index : int, loop : bool = False):
 		for i in range(index-1):
@@ -582,6 +584,24 @@ class Music(commands.Cog):
 				await ctx.voice_state.songs.put(song)
 				await ctx.send('재생목록 추가 : {}'.format(str(source)))
 
+	@commands.command(name=command[15][0], aliases=command[15][1:])
+	async def _reserve(self, ctx: commands.Context, *, search: str):
+		if not ctx.voice_state.is_playing:
+			return await ctx.send(f":mute: 현재 재생중인 음악이 없습니다. {command[2][0]} 명령어를 통해 노래를 예약해주세요!")
+
+		async with ctx.typing():
+			try:
+				source = await YTDLSource.create_source(self.bot, ctx, search, loop=self.bot.loop)
+				if not source:
+					return await ctx.send(f"노래 재생/예약이 취소 되었습니다.")
+			except YTDLError as e:
+				await ctx.send('에러가 발생했습니다 : {}'.format(str(e)))
+			else:
+				song = Song(source)
+
+				ctx.voice_state.songs.reserve(song)
+				await ctx.send('재생목록 추가 : {}'.format(str(source)))
+
 	@commands.command(name=command[13][0], aliases=command[13][1:])
 	async def clear_channel_(self, ctx: commands.Context, *, msg: int = 1):
 		try:
@@ -603,10 +623,11 @@ class Music(commands.Cog):
 	@commands.command(name=command[12][0], aliases=command[12][1:])   #도움말
 	async def menu_(self, ctx):
 		command_list = ''
-		command_list += '!인중 : 봇상태가 안좋을 때 쓰세요!'     #!
+		command_list += '!인중 : 봇상태가 안좋을 때 쓰세요!\n'     #!
 		command_list += ','.join(command[0]) + '\n'     #!들어가자
 		command_list += ','.join(command[1]) + '\n'     #!나가자
 		command_list += ','.join(command[2]) + ' [검색어] or [url]\n'     #!재생
+		command_list += ','.join(command[15]) + ' [검색어] or [url]\n'     #!우선예약
 		command_list += ','.join(command[3]) + '\n'     #!일시정지
 		command_list += ','.join(command[4]) + '\n'     #!다시재생
 		command_list += ','.join(command[5]) + ' (숫자)\n'     #!스킵
@@ -644,7 +665,7 @@ class Music(commands.Cog):
 		await ctx.voice_state.stop()
 		del self.voice_states[ctx.guild.id]
 
-bot = commands.Bot('', help_command = None, description='해성뮤직봇')
+bot = commands.Bot('', help_command = None, description='뮤직언니')
 bot.add_cog(Music(bot))
 
 @bot.event
