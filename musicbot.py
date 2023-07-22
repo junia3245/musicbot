@@ -33,7 +33,7 @@ logging.basicConfig(stream=log_stream, level=logging.WARNING)
 #ilsanglog.addHandler(handler)
 #####################################################
 
-token = open("token", "r").read()
+token = open('workfile', 'w', encoding="utf-8")
 
 def init():
 	global command
