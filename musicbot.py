@@ -33,7 +33,7 @@ logging.basicConfig(stream=log_stream, level=logging.WARNING)
 #ilsanglog.addHandler(handler)
 #####################################################
 
-access_token = open("token", "r").readline()
+token = open("token", "r").readline()
 
 def init():
 	global command
@@ -685,4 +685,4 @@ async def on_command_error(ctx, error):
 		return
 	raise error
 
-bot.run(access_token)
+bot.run(token)
