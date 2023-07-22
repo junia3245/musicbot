@@ -21,6 +21,7 @@ from io import StringIO
 import time
 import urllib.request
 from gtts import gTTS
+from pathlib import Path
 
 ##################### 로깅 ###########################
 log_stream = StringIO()    
@@ -33,7 +34,7 @@ logging.basicConfig(stream=log_stream, level=logging.WARNING)
 #ilsanglog.addHandler(handler)
 #####################################################
 
-token = open('token', 'r', encoding="utf-8")
+token = open(Path('D:\00.개인작업\린2M\musicbot\musicbot-main\\token.txt').name)
 
 def init():
 	global command
